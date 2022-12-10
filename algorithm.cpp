@@ -19,10 +19,10 @@ void ACOTSP::Simulate()
     for (i = 1; i <= antsAmount; i++)
     {
         // Coloca la hormiga en una ciudad aleatoria:
-        firstCity = rand() % (cities) + 1;
+        firstCity = rand() % (cities);
         vector<int> path = {};
         path.push_back(firstCity);
-        for (int x = 1; x < cities; x++)
+        for (int x = 0; x < cities; x++)
             path.push_back(-1);
         paths.push_back(path);
     }
@@ -95,8 +95,8 @@ void ACOTSP::Simulate()
                     pathsProbability.push_back(probability);
                 }
             }
-            cout<<"Actual:"<<actualCity<<"; Incial: "<<firstCity<<"; ";
-            cout<<probability<<"Con "<<disponibles.size()<<endl;
+            // cout<<"Actual:"<<actualCity<<"; Incial: "<<firstCity<<"; ";
+            // cout<<probability<<"Con "<<disponibles.size()<<endl;
             double suma = 0;
             for (int ix = 0; ix < pathsProbability.size(); ix++)
             {
