@@ -15,10 +15,11 @@ void ACOTSP::Simulate()
     int ant, step, city, i, j;
     // vector<double> pathsProbability = {};
     srand(time(NULL));
+    int firstCity;
     for (i = 1; i <= antsAmount; i++)
     {
         // Coloca la hormiga en una ciudad aleatoria:
-        int firstCity = rand() % (cities) + 1;
+        firstCity = rand() % (cities) + 1;
         vector<int> path = {};
         path.push_back(firstCity);
         for (int x = 1; x < cities; x++)
@@ -37,7 +38,17 @@ void ACOTSP::Simulate()
         // Da un paso para cada hormiga:
         vector<int> transitedCities = {};
         transitedCities.clear();
-        int controlCities[200];
+        transitedCities.push_back(firstCity);
+
+        // Crea una lista con los caminos disponibles,
+        // para ignorarlos al tratar de caminar sobre ellos:
+        vector<int> disponibles = {};
+        disponibles.clear();
+        for (city = 0; city < cities; city++)
+        {
+            disponibles.push_back(city);
+        }
+
         srand(time(NULL));
         for (step = 0; step < cities-1; step++)
         {
@@ -51,17 +62,15 @@ void ACOTSP::Simulate()
             double sum = 0;
             double pheromone, visibility, numerator, probability;
             int actualCity = paths[ant][step];
+            disponibles.erase(remove(disponibles.begin(), disponibles.end(), actualCity), disponibles.end());
+            transitedCities.push_back(actualCity);
             // cout<<"Actual: "<<actualCity<<endl;
             vector<double> pathsProbability = {};
             pathsProbability.clear();
             // int a = 0;
             for (city = 0; city < cities; city++)
             {
-                if ((std::find(transitedCities.begin(), transitedCities.end(), city) != transitedCities.end()))
-                {
-                    // cout<<" 1. Existe: "<<city<<"; ";
-                }
-                else
+                if (std::find(transitedCities.begin(), transitedCities.end(), city) == transitedCities.end())
                 {
                     // a++;
                     pheromone = roadsPheromone[actualCity][city];
@@ -71,16 +80,14 @@ void ACOTSP::Simulate()
                 }
                 // cout<<"a: "<<a<<endl;
             }
+            // cout<<sum<<endl;
             
             // Encuentra la probabilidad para cada camino:
             for (int path = 0; path < cities; path++)
             {
-                if ((std::find(transitedCities.begin(), transitedCities.end(), path) != transitedCities.end()))
+                if (std::find(transitedCities.begin(), transitedCities.end(), path) == transitedCities.end())
                 {
-                    // cout<<" 2. Existe: "<<city<<"; ";
-                }
-                else
-                {
+                    // cout<<"a";
                     pheromone = roadsPheromone[path][actualCity];
                     visibility = visibilityRoads[path][actualCity];
                     numerator = (pow(pheromone, pheromoneImportance)*(pow(visibility, visibilityImportance)));
@@ -88,13 +95,15 @@ void ACOTSP::Simulate()
                     pathsProbability.push_back(probability);
                 }
             }
+            cout<<"Actual:"<<actualCity<<"; Incial: "<<firstCity<<"; ";
+            cout<<probability<<"Con "<<disponibles.size()<<endl;
             double suma = 0;
             for (int ix = 0; ix < pathsProbability.size(); ix++)
             {
                 // cout<<"["<<pathsProbability[ix]<<"]";
                 suma += pathsProbability[ix];
             }
-            // cout<<"AW:"<<suma<<endl;
+            // cout<<"SUMA:"<<suma<<endl;
 
             // Decide qué camino tomar:
             // Calcula un aleatorio entre 0 y 1; y en base a la sumatoria
@@ -105,26 +114,26 @@ void ACOTSP::Simulate()
             sum = 0;
             int nextCity = actualCity;
             // Se asegura de que la siguiente ciudad no sea la actual:
-            vector<int> availableCities = {};
-            for (city = 0; city < cities; city++)
+            // vector<int> availableCities = {};
+            /*for (city = 0; city < cities; city++)
             {
                 // Si la ciudad ya fue transitada, no la toma:
-                if (!(std::find(transitedCities.begin(), transitedCities.end(), city) != transitedCities.end()))
+                if (std::find(transitedCities.begin(), transitedCities.end(), city) == transitedCities.end())
                 {
                     availableCities.push_back(city);
                     // cout<<city<<" -> ";
                 }
-            }
+            }*/
             // cout<<endl;
 
             double nextPoint = 0;
             while (nextCity == actualCity)
             {
                 sum = 0;
-                for (city = 0; city < availableCities.size(); city++)
+                for (city = 0; city < disponibles.size(); city++)
                 {
                     // Si tiene que pasar por una ciudad por la que no ha transitado:
-                    // if ((std::find(transitedCities.begin(), transitedCities.end(), city) != transitedCities.end()))
+                    // if (std::find(transitedCities.begin(), transitedCities.end(), city) != transitedCities.end())
                     // {
                     //     break;
                     // }
@@ -135,7 +144,7 @@ void ACOTSP::Simulate()
                     {
                         // Encontró el próximo camino:
                         // cout<<"Próxima ciudad: "<<availableCities[city]<<endl;
-                        nextCity = availableCities[city];
+                        nextCity = disponibles[city];
 
                         // Agrega la ciudad a la lista de las transitadas:
                         transitedCities.push_back(nextCity);
@@ -163,5 +172,6 @@ void ACOTSP::Simulate()
         }
         cout<<endl;
     }
+
     cout<<"\n\n";
 }
