@@ -17,7 +17,9 @@ void ACOTSP::SetParameters()
 	cin>>defaultPheromone;
 	cout<<"* Cociente de evaporacion de fermona: ";
 	cin>>pheromoneEvaporation;
-	cout<<"* Constante de valor para el paso de una hormiga por arista: ";
+	cout<<"* Rastro de feromona: ";
 	cin>>pheromoneStep;
+	cout<<"* Cantidad de iteraciones: ";
+	cin>>iterations;
     cout<<"\n";
 }

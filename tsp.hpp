@@ -38,6 +38,7 @@ class ACOTSP
         double defaultPheromone;
         double pheromoneEvaporation;
         double pheromoneStep;
+        int iterations;
 
         //* Variables del algoritmo:
         vector<vector<int>> paths;

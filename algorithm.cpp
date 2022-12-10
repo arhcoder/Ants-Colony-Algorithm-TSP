@@ -27,10 +27,13 @@ void ACOTSP::Simulate()
         paths.push_back(path);
     }
 
-    // Vector con todas las ciudades que se pueden
-
     // Para cada hormiga, se sigue el camino:
     srand(time(NULL));
+    vector<double> fitness;
+    for (ant = 0; ant < antsAmount; ant++)
+    {
+        fitness.push_back(0);
+    }
     for (ant = 0; ant < antsAmount; ant++)
     {
         // cout<<"HORMIGA "<<ant+1<<endl;
@@ -67,7 +70,6 @@ void ACOTSP::Simulate()
             // cout<<"Actual: "<<actualCity<<endl;
             vector<double> pathsProbability = {};
             pathsProbability.clear();
-            // int a = 0;
             for (city = 0; city < cities; city++)
             {
                 if (std::find(transitedCities.begin(), transitedCities.end(), city) == transitedCities.end())
@@ -156,8 +158,16 @@ void ACOTSP::Simulate()
             }
             
             paths[ant][step+1] = nextCity;
+            fitness[ant] += roads[actualCity][nextCity];
             // cout<<"["<<paths[ant][step+1]<<"]";
             // pathsProbability.clear();*/
+
+            // When is the last step, it complete the road going to the starting city:
+            if (step == cities-2)
+            {
+                // cout<<nextCity<<";"<<endl;
+                fitness[ant] += roads[nextCity][firstCity];
+            }
         }
         // cout<<"\n";
         // pathsProbability.clear();
@@ -165,13 +175,12 @@ void ACOTSP::Simulate()
 
     for (ant = 0; ant < antsAmount; ant++)
     {
-        cout<<"\nHormiga 0"<<ant+1<<": "<<endl;
+        cout<<"\n\nHORMIGA "<<ant+1<<": "<<endl;
         for (city = 0; city < cities; city++)
         {
-            cout<<" "<<paths[ant][city]<<" =>";
+            cout<<"["<<paths[ant][city]<<"] => ";
         }
-        cout<<endl;
+        cout<<"["<<paths[ant][0]<<"] = "<<fitness[ant]<<"km;";
     }
-
     cout<<"\n\n";
 }
