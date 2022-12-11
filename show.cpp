@@ -55,3 +55,13 @@ void ACOTSP::ShowPaths()
         cout<<endl;
     }
 }
+
+void ACOTSP::ShowBest()
+{
+	cout<<"\nMejor recorrido ["<<bestFitness<<"km]:"<<endl;
+    for (int city = 0; city < cities; city++)
+    {
+        cout<<""<<bestPath[city]<<" => ";
+    }
+    cout<<""<<bestPath[0]<<";\n\n";
+}

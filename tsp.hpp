@@ -42,6 +42,8 @@ class ACOTSP
 
         //* Variables del algoritmo:
         vector<vector<int>> paths;
+        vector<int> bestPath;
+        double bestFitness;
     
     //? MÉTODOS ?//
     public:
@@ -52,7 +54,9 @@ class ACOTSP
         void ShowVisibilities();
         void ShowPaths();
         void SetParameters();
+        void ANTS();
         void Simulate();
+        void ShowBest();
 };
 
 #endif

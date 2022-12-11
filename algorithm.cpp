@@ -8,7 +8,12 @@
 
 using namespace std;
 
-void ACOTSP::Simulate()
+void printLine()
+{
+    cout<<"\n\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n";
+}
+
+void ACOTSP::ANTS()
 {
     // Crea un vector de vectores para guardar los caminos de las hormigas;
     // Cada vector de este vector corresponder a una hormiga y su ruta:
@@ -28,7 +33,6 @@ void ACOTSP::Simulate()
     }
 
     // Para cada hormiga, se sigue el camino:
-    srand(time(NULL));
     vector<double> fitness;
     for (ant = 0; ant < antsAmount; ant++)
     {
@@ -105,6 +109,12 @@ void ACOTSP::Simulate()
                 // cout<<"["<<pathsProbability[ix]<<"]";
                 suma += pathsProbability[ix];
             }
+
+            if (suma == 0 || pathsProbability.size() == 0)
+            {
+                break;
+            }
+
             // cout<<"SUMA:"<<suma<<endl;
 
             // Decide qué camino tomar:
@@ -173,14 +183,101 @@ void ACOTSP::Simulate()
         // pathsProbability.clear();
     }
 
+    // Encuentra la mejor solución y la respalda:
+    bestPath = {};
+    bestPath.clear();
+    /* if (bestFitness == null)
+    {
+        bestFitness = fitness[0];
+    }*/
+    int bestAnt = 0;
     for (ant = 0; ant < antsAmount; ant++)
     {
-        cout<<"\n\nHORMIGA "<<ant+1<<": "<<endl;
+        // cout<<"if ("<<fitness[ant]<<" < "<<bestFitness<<")"<<endl;
+        if (fitness[ant] < bestFitness)
+        {
+            bestFitness = fitness[ant];
+            bestAnt = ant;
+        }
+    }
+    for (city = 0; city < cities; city++)
+    {
+        bestPath.push_back(paths[bestAnt][city]);
+    }
+
+    for (ant = 0; ant < antsAmount; ant++)
+    {
+        cout<<"\nHormiga "<<ant+1<<" ["<<fitness[ant]<<"km]:"<<endl;
         for (city = 0; city < cities; city++)
         {
-            cout<<"["<<paths[ant][city]<<"] => ";
+            cout<<""<<paths[ant][city]<<" => ";
         }
-        cout<<"["<<paths[ant][0]<<"] = "<<fitness[ant]<<"km;";
+        cout<<""<<paths[ant][0]<<";"<<endl;
     }
-    cout<<"\n\n";
+    printLine();
+    cout<<"Mejor camino ["<<bestFitness<<"km]:"<<endl;
+    for (city = 0; city < cities; city++)
+    {
+        cout<<""<<bestPath[city]<<" => ";
+    }
+    cout<<""<<bestPath[0]<<";";
+    printLine();
+
+    // Actualiza la feromona:
+    //* Para cada tramo recorrido, se agrega la feromona correspondiente
+    //* al camino de las hormigas, basados en la fórmula:
+    //? <INSERTE FÓRMULA AQUÍ>:
+    // Evapora la feromona:
+    for (i = 0; i < cities; i++)
+    {
+        for (j = 0; j < cities; j++)
+        {
+            roadsPheromone[i][j] *= (1 - pheromoneEvaporation);
+        }
+    }
+    // Deposita la feromona:
+    double pheromona = 0;
+    // cout<<"a";
+    for (ant = 0; ant < antsAmount; ant++)
+    {
+        // Feromona depositada:
+        pheromona = double(double(pheromoneStep) / double(fitness[ant]));
+        // cout<<"b";
+        // cout<<"\n";
+        for (city = 0; city < cities; city++)
+        {
+            // cout<<"c";
+            // El último tramo:
+            if (city == cities - 1)
+            {
+                // cout<<"d";
+                // cout<<"Hormiga "<<ant<<"; ["<<paths[ant][city]<<"]-["<<paths[ant][0]<<"] += "<<pheromona<<endl;
+                roadsPheromone[paths[ant][city]][paths[ant][0]] += pheromona;
+                roadsPheromone[paths[ant][0]][paths[ant][city]] += pheromona;
+            }
+            else
+            {
+                // cout<<"e";
+                // cout<<"Hormiga "<<ant<<"; ["<<paths[ant][city]<<"]-["<<paths[ant][city+1]<<"] += "<<pheromona<<endl;
+                roadsPheromone[paths[ant][city]][paths[ant][city+1]] += pheromona;
+                roadsPheromone[paths[ant][city+1]][paths[ant][city]] += pheromona;
+            }
+        }
+    }
+    // ShowPheromones();
+}
+
+void ACOTSP::Simulate()
+{
+    srand(time(NULL));
+    bestFitness = 1000000000;
+    for (int iteration = 1; iteration <= iterations; iteration++)
+    {
+        printLine();
+        cout<<"INTERACION "<<iteration<<" DE "<<iterations;
+        printLine();
+        srand(time(NULL));
+        ACOTSP::ANTS();
+        // ACOTSP::ShowPheromones();
+    }
 }
